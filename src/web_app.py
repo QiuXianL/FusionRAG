@@ -607,37 +607,31 @@ def api_chat():
                 for i, r in enumerate(results, 1):
                     context += f"参考文档{i}：{r['original_text']}\n\n"
 
-                # 构建知识库概览
-                kb_sources = []
+                # 构建知识库概览（动态获取，每次请求实时查询）
+                kb_overview = ""
                 try:
                     db = retriever.databases.get("enhanced", {})
-                    sources = db.get("document_sources", [])
                     doc_count = len(db.get("documents", []))
-                    for src in sources:
-                        kb_sources.append(src.get("name", ""))
+                    sources = db.get("document_sources", [])
+                    src_names = [s.get("name", "") for s in sources[:3]]
+                    if doc_count > 0:
+                        kb_overview = f"你目前能访问一座符文之地档案馆，馆藏约 {doc_count} 卷文献"
+                        if src_names:
+                            kb_overview += f"，主要来源包括：{'、'.join(src_names)}等"
+                        kb_overview += "。用户可能询问馆藏内容，请如实根据这些信息回答。"
                 except Exception:
-                    doc_count = 0
+                    pass
 
-                kb_overview = ""
-                if kb_sources:
-                    kb_overview = f"当前档案馆收藏了 {doc_count} 卷古籍（文档块），来源包括：{', '.join(kb_sources[:5])}{'…等' if len(kb_sources) > 5 else ''}。"
-
-                # 构建完整对话消息
+                # 构建对话消息
                 messages = [{
                     "role": "system",
-                    "content": f"""你是符文之地的博学贤者，通晓英雄联盟宇宙的一切传奇。你正在与用户进行多轮对话。
-
-{kb_overview}
-
-当用户问"知识库里有什么""档案馆收藏了什么"或类似问题时，你应该像一位真正的贤者那样，施展你的"记忆回溯"法术，向用户展示你脑海中浮现的记忆片段——也就是概述档案馆中收藏的英雄和故事。用优雅、史诗般的口吻回答，让用户感受到符文之地档案馆的浩瀚。
-
-其他时候，请基于参考文档和你的知识，用中文回答。保持对话自然流畅，记住之前聊过的内容。大胆给出判断和见解，不要回避问题。"""
+                    "content": f"你是符文之地的博学贤者，通晓英雄联盟宇宙的一切传奇。{kb_overview}请保持对话自然流畅，记住之前聊过的内容，大胆给出判断和见解。"
                 }]
 
                 if context.strip():
                     messages.append({
                         "role": "system",
-                        "content": f"你在记忆回溯中找到了以下与用户问题相关的古籍片段：\n<古籍片段>\n{context}\n</古籍片段>\n请基于这些古籍和你的知识回答。如果文档信息不完整，大胆用你的知识补充。回答时可以提及这些记忆的来源，但不要生硬地列编号。"
+                        "content": f"以下是与用户问题相关的参考文档：\n<参考文档>\n{context}\n</参考文档>\n请基于这些文档和你的知识回答。如果文档信息不完整，大胆用你的知识补充。"
                     })
 
                 # 历史对话（最近 10 轮 = 20 条）
