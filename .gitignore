@@ -16,6 +16,9 @@ output_model/
 temp_*
 *.backup_*
 
+# 方案文档（开发过程产物）
+plans/
+
 # IDE / 编辑器
 .claude/
 .vscode/
