@@ -1,0 +1,3 @@
+- [写代码前先写方案文档经审核](code-review-before-implementation.md) — 任何代码改动前必须先写文档说明，用户审核通过后才能开始写
+- [方案文档统一放 plans/ 文件夹](plan-documents-folder.md) — 所有方案文档集中放在 plans/ 目录，不散落在项目根目录
+- [做完方案必须写完成报告](completion-report-required.md) — 每个方案审核通过并做完后，必须写完成报告
