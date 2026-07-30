@@ -31,26 +31,24 @@ def check_environment():
     """检查运行环境"""
     print("🔍 检查运行环境...")
     
-    # 检查关键文件
+    # 检查关键文件（相对于 src/ 目录）
+    _src_dir = os.path.dirname(os.path.abspath(__file__))
+    _proj_dir = os.path.dirname(_src_dir)
     required_files = [
-        'documents/document.txt',
-        'template.html',
-        'smart_retrieval.py',
-        'web_app.py',
-        'document_manager.py'
+        os.path.join(_proj_dir, 'documents', 'document.txt'),
+        os.path.join(_src_dir, 'template.html'),
+        os.path.join(_src_dir, 'smart_retrieval.py'),
+        os.path.join(_src_dir, 'web_app.py'),
+        os.path.join(_src_dir, 'document_manager.py')
     ]
-    
     missing_files = []
     for file in required_files:
         if not os.path.exists(file):
             missing_files.append(file)
-    
     if missing_files:
         print(f"❌ 缺少必要文件: {', '.join(missing_files)}")
         return False
-    
-    # 检查向量数据库
-    if not os.path.exists('documents/document_vectors_enhanced.json'):
+    if not os.path.exists(os.path.join(_proj_dir, 'documents', 'document_vectors_enhanced.json')):
         print("⚠️ 未找到增强向量数据库文件")
         print("💡 请先运行: python web_app.py (在Web界面中点击'更新数据库')")
         return False

@@ -707,7 +707,7 @@ def api_update():
         init_document_manager()
         
         # 检查原始文档是否存在
-        original_doc_path = "documents/document.txt"
+        original_doc_path = os.path.join(os.path.dirname(BASE_DIR), "documents", "document.txt")
         if not os.path.exists(original_doc_path):
             log_message(f"❌ 原始文档不存在: {original_doc_path}", "ERROR")
             return jsonify({'success': False, 'error': '原始文档 document.txt 不存在'})
@@ -760,8 +760,9 @@ def api_upload():
         
         if file and file.filename.endswith('.txt'):
             # 保存文件
-            file.save('documents/document.txt')
-            log_message(f"✅ 文件保存成功: documents/document.txt")
+            save_path = os.path.join(os.path.dirname(BASE_DIR), "documents", "document.txt")
+            file.save(save_path)
+            log_message(f"✅ 文件保存成功: {save_path}")
             log_message("💡 提示: 请点击'更新数据库'按钮重新处理文档")
             return jsonify({'success': True, 'message': '文件上传成功，请点击更新数据库'})
         else:

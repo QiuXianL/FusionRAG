@@ -350,6 +350,9 @@
 <body>
 <canvas id="starCanvas"></canvas>
 
+<!-- Toast -->
+<div class="toast-ctr" id="toastContainer"></div>
+
 <!-- Navbar -->
 <nav class="navbar">
     <span class="nav-brand">RUNETERRA<sup>FusionRAG</sup></span>
@@ -530,7 +533,7 @@
             var cx = canvas.width / 2, cy = canvas.height / 2;
             for (var i = 0; i < stars.length; i++) {
                 var s = stars[i];
-                s.r = s.baseR + Math.sin(t * s.ts + s.to) * 0.6;
+                s.r = Math.max(0.05, s.baseR + Math.sin(t * s.ts + s.to) * 0.6);
                 var sx = 0, sy = 0;
                 if (mouseX > 0) { sx = (mouseX - cx) * 0.005 * (s.r / 2); sy = (mouseY - cy) * 0.005 * (s.r / 2); }
                 var px = s.x + sx, py = s.y + sy;
