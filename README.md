@@ -2,6 +2,11 @@
 
 > AI 驱动的英雄联盟宇宙知识检索与对话系统 — 探索符文之地的每一段传奇
 
+<p align="center">
+  <img src="docs/screenshots/主界面.png" alt="主界面" width="30%" />
+  <img src="docs/screenshots/搜索展示.png" alt="搜索展示" width="30%" />
+  <img src="docs/screenshots/对话展示.png" alt="对话展示" width="30%" />
+</p>
 
 ## 🎮 LoL 宇宙特色
 
