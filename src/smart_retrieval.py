@@ -159,37 +159,50 @@ class SmartRetriever:
         # 5. 排序并返回 Top K 候选集 (扩大范围以供重排序)
         final_results.sort(key=lambda x: x['final_score'], reverse=True)
 
-        # 获取 3倍 Top K 的候选集进行重排序
-        candidate_k = min(len(final_results), top_k * 3)
+        # 获取 5倍 Top K 的候选集进行重排序（增大候选池减少遗漏）
+        candidate_k = min(len(final_results), top_k * 5)
         candidates = final_results[:candidate_k]
 
-        # 格式化向量检索候选集
+        # 格式化向量检索候选集（去重）
+        seen_texts = set()
         seen_chunks = set()
         formatted_candidates = []
         for res in candidates:
+            text_key = res['original_text'][:100]  # 前100字作为去重指纹
+            if text_key in seen_texts:
+                continue  # 跳过重复块
+            seen_texts.add(text_key)
+            seen_chunks.add(res['chunk_index'])
             formatted_candidates.append({
                 'original_text': res['original_text'],
                 'document_name': res['document_name'],
-                'match_type': 'weighted_fusion',  # 标记为加权融合
+                'match_type': 'weighted_fusion',
                 'similarity_score': res['final_score'],
                 'chunk_index': res['chunk_index'],
-                'vector_index': -1,  # 不再适用
+                'vector_index': -1,
                 'details': {
                     'doc_score': res['doc_score'],
                     'q_score': res['max_q_score']
                 }
             })
-            seen_chunks.add(res['chunk_index'])
 
         # 5.5. 关键词检索补充（弥补向量检索对精确名称匹配的不足）
-        keyword_candidates = self._keyword_retrieval(query, documents, top_k * 2, seen_chunks)
+        keyword_candidates = self._keyword_retrieval(query, documents, top_k * 3, seen_chunks)
         formatted_candidates.extend(keyword_candidates)
 
         # 6. 应用重排序 (Rerank)
         reranked_results = self.rerank_results(query, formatted_candidates)
 
-        # 返回最终 Top K
-        return reranked_results[:top_k]
+        # 7. 最终去重（以防重排序后仍有重复）
+        seen = set()
+        final = []
+        for r in reranked_results:
+            key = r['original_text'][:100]
+            if key not in seen:
+                seen.add(key)
+                final.append(r)
+
+        return final[:top_k]
 
     def _keyword_retrieval(self, query: str, documents: list, top_k: int,
                            exclude_chunks: set) -> List[Dict]:
@@ -234,7 +247,7 @@ class SmartRetriever:
                 'original_text': text,
                 'document_name': None,
                 'match_type': 'keyword',
-                'similarity_score': score * 0.7,  # 略低于向量检索的高分，让重排序器最终裁决
+                'similarity_score': score * 0.85,  # 关键词高置信度，给较高初始分让重排序器裁决
                 'chunk_index': chunk_idx,
                 'vector_index': -1,
                 'details': {
