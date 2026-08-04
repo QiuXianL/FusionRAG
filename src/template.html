@@ -32,6 +32,7 @@
             padding:12px 14px 6px;
         }
         .card-nav{
+            position:relative;z-index:40;
             width:min(760px, 94%);
             background:rgba(10,16,30,0.92);
             border:1px solid var(--border-gold);
@@ -43,6 +44,7 @@
         }
         .card-nav.open{box-shadow:0 8px 40px rgba(0,0,0,0.5), 0 0 40px rgba(200,155,60,0.08)}
         .card-nav-top{
+            position:relative;
             height:52px;display:flex;align-items:center;justify-content:space-between;
             padding:6px 8px 6px 16px;
         }
@@ -455,39 +457,39 @@
         </div>
 
         <div class="card-nav-content">
-            <div class="nav-card" onclick="switchTab('search')">
+            <div class="nav-card" onclick="switchTab('search'");collapseNavCards();">
                 <div class="nav-card-label"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-search"/></svg>探索</div>
                 <div class="nav-card-links">
-                    <a class="nav-card-link" onclick="event.stopPropagation();switchTab('search')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-search"/></svg>知识检索</a>
-                    <a class="nav-card-link" onclick="event.stopPropagation();switchTab('chat')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-chat"/></svg>多轮对话</a>
-                    <a class="nav-card-link" onclick="event.stopPropagation();switchTab('chat')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-temple"/></svg>论战 / 推演</a>
+                    <a class="nav-card-link" onclick="event.stopPropagation();collapseNavCards();switchTab('search')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-search"/></svg>知识检索</a>
+                    <a class="nav-card-link" onclick="event.stopPropagation();collapseNavCards();switchTab('chat')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-chat"/></svg>多轮对话</a>
+                    <a class="nav-card-link" onclick="event.stopPropagation();collapseNavCards();switchTab('chat')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-temple"/></svg>论战 / 推演</a>
                 </div>
             </div>
 
-            <div class="nav-card" onclick="showDocumentManager()">
+            <div class="nav-card" onclick="showDocumentManager(");collapseNavCards();">
                 <div class="nav-card-label"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-board"/></svg>档案库</div>
                 <div class="nav-card-links">
-                    <a class="nav-card-link" onclick="event.stopPropagation();showDocumentManager()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-doc"/></svg>文档管理</a>
-                    <a class="nav-card-link" onclick="event.stopPropagation();updateDatabase()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-bolt"/></svg>更新数据库</a>
-                    <a class="nav-card-link" onclick="event.stopPropagation();showUploadModal()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-folder"/></svg>上传文档</a>
+                    <a class="nav-card-link" onclick="event.stopPropagation();collapseNavCards();showDocumentManager()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-doc"/></svg>文档管理</a>
+                    <a class="nav-card-link" onclick="event.stopPropagation();collapseNavCards();updateDatabase()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-bolt"/></svg>更新数据库</a>
+                    <a class="nav-card-link" onclick="event.stopPropagation();collapseNavCards();showUploadModal()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-folder"/></svg>上传文档</a>
                 </div>
             </div>
 
-            <div class="nav-card" onclick="showHistoryManager()">
+            <div class="nav-card" onclick="showHistoryManager(");collapseNavCards();">
                 <div class="nav-card-label"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-book"/></svg>历史</div>
                 <div class="nav-card-links">
-                    <a class="nav-card-link" onclick="event.stopPropagation();showHistoryManager()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-book"/></svg>检索记录</a>
-                    <a class="nav-card-link" onclick="event.stopPropagation();showHistoryManager()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-stats"/></svg>使用统计</a>
-                    <a class="nav-card-link" onclick="event.stopPropagation();clearAllHistory()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-warn"/></svg>清空历史</a>
+                    <a class="nav-card-link" onclick="event.stopPropagation();collapseNavCards();showHistoryManager()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-book"/></svg>检索记录</a>
+                    <a class="nav-card-link" onclick="event.stopPropagation();collapseNavCards();showHistoryManager()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-stats"/></svg>使用统计</a>
+                    <a class="nav-card-link" onclick="event.stopPropagation();collapseNavCards();clearAllHistory()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-warn"/></svg>清空历史</a>
                 </div>
             </div>
 
-            <div class="nav-card" onclick="updateDatabase()">
+            <div class="nav-card" onclick="updateDatabase(");collapseNavCards();">
                 <div class="nav-card-label"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-box"/></svg>维护</div>
                 <div class="nav-card-links">
-                    <a class="nav-card-link" onclick="event.stopPropagation();updateDatabase()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-bolt"/></svg>重新索引</a>
-                    <a class="nav-card-link" onclick="event.stopPropagation();loadBackupList()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-box"/></svg>备份管理</a>
-                    <a class="nav-card-link" onclick="event.stopPropagation();showToast('欢迎探索符文之地档案馆','info')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-temple"/></svg>关于</a>
+                    <a class="nav-card-link" onclick="event.stopPropagation();collapseNavCards();updateDatabase()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-bolt"/></svg>重新索引</a>
+                    <a class="nav-card-link" onclick="event.stopPropagation();collapseNavCards();loadBackupList()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-box"/></svg>备份管理</a>
+                    <a class="nav-card-link" onclick="event.stopPropagation();collapseNavCards();showToast('欢迎探索符文之地档案馆','info')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-temple"/></svg>关于</a>
                 </div>
             </div>
         </div>
@@ -691,6 +693,9 @@
             navExpanded = !navExpanded;
             document.getElementById('cardNav').classList.toggle('open', navExpanded);
             document.getElementById('navHamburger').classList.toggle('open', navExpanded);
+        }
+        function collapseNavCards() {
+            if (navExpanded) toggleNavCards();
         }
 
         // ═══════════ Icon Helper ═══════════
