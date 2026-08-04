@@ -25,38 +25,99 @@
         /* ── Canvas ──────────────────────────── */
         #starCanvas{position:fixed;inset:0;z-index:0;pointer-events:none}
 
-        /* ── Navbar ──────────────────────────── */
+        /* ── Navbar (CardNav style) ──────────── */
         .navbar{
-            position:relative;z-index:30;display:flex;align-items:center;justify-content:space-between;
-            padding:10px 14px;border-bottom:1px solid var(--border);
-            background:rgba(6,12,22,0.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+            position:relative;z-index:30;
+            display:flex;justify-content:center;
+            padding:12px 14px 6px;
         }
-        @media(min-width:640px){.navbar{padding:12px 24px}}
-        @media(min-width:768px){.navbar{padding:14px 36px}}
+        .card-nav{
+            width:min(760px, 94%);
+            background:rgba(10,16,30,0.92);
+            border:1px solid var(--border-gold);
+            border-radius:16px;
+            backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+            box-shadow:0 4px 30px rgba(0,0,0,0.4), 0 0 30px rgba(200,155,60,0.04);
+            overflow:hidden;
+            transition:box-shadow 0.4s;
+        }
+        .card-nav.open{box-shadow:0 8px 40px rgba(0,0,0,0.5), 0 0 40px rgba(200,155,60,0.08)}
+        .card-nav-top{
+            height:52px;display:flex;align-items:center;justify-content:space-between;
+            padding:6px 8px 6px 16px;
+        }
         .nav-brand{
-            display:flex;align-items:center;gap:8px;
+            position:absolute;left:50%;transform:translateX(-50%);
             font-family:'Cinzel',serif;font-size:0.95rem;font-weight:700;letter-spacing:0.08em;
             background:linear-gradient(180deg,var(--gold-bright),var(--gold),var(--gold-dim));
             -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
             filter:drop-shadow(0 0 6px rgba(200,155,60,0.25));
-            text-decoration:none;
+            white-space:nowrap;
         }
-        @media(min-width:768px){.nav-brand{font-size:1.1rem}}
+        @media(min-width:768px){.nav-brand{font-size:1.05rem}}
         .nav-brand sup{font-size:0.45rem;font-weight:400;font-family:'Inter',sans-serif;-webkit-text-fill-color:var(--text-dim);margin-left:2px}
-        .nav-actions{display:flex;align-items:center;gap:6px}
-        @media(min-width:640px){.nav-actions{gap:14px}}
+        .nav-actions{display:flex;align-items:center;gap:8px}
         .nav-btn{
-            font-size:0.76rem;font-weight:500;padding:7px 14px;border-radius:9999px;
+            font-size:0.74rem;font-weight:500;padding:7px 14px;border-radius:9999px;
             cursor:pointer;transition:all 0.25s;background:none;border:1px solid var(--border);
             color:var(--text-dim);font-family:inherit;letter-spacing:0.02em;
         }
         .nav-btn:hover{border-color:var(--gold);color:var(--gold-light)}
-        @media(max-width:480px){.nav-btn{padding:6px 10px;font-size:0.7rem}}
+        @media(max-width:480px){.nav-btn{padding:6px 10px;font-size:0.68rem}}
         .nav-btn-primary{
             background:linear-gradient(135deg,#C89B3C,#B8860B);color:#1A1206;border:none;
             font-weight:600;box-shadow:0 0 14px rgba(200,155,60,0.15);
         }
         .nav-btn-primary:hover{box-shadow:0 0 22px rgba(200,155,60,0.3)}
+
+        /* Hamburger */
+        .hamburger-btn{
+            width:38px;height:38px;border-radius:10px;
+            background:rgba(255,255,255,0.03);border:1px solid var(--border);
+            display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+            cursor:pointer;transition:all 0.3s;
+        }
+        .hamburger-btn:hover{border-color:var(--gold)}
+        .hamburger-line{
+            width:18px;height:2px;background:var(--gold);
+            transition:transform 0.3s ease, opacity 0.2s ease;
+        }
+        .hamburger-btn.open .hamburger-line:first-child{transform:translateY(4px) rotate(45deg)}
+        .hamburger-btn.open .hamburger-line:last-child{transform:translateY(-4px) rotate(-45deg)}
+
+        /* Card content */
+        .card-nav-content{
+            display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;
+            padding:0 8px 8px;
+            max-height:0;overflow:hidden;opacity:0;
+            transition:max-height 0.45s cubic-bezier(0.22,1,0.36,1), opacity 0.35s;
+        }
+        .card-nav.open .card-nav-content{max-height:260px;opacity:1}
+        .nav-card{
+            border-radius:12px;padding:12px 14px;
+            background:rgba(255,255,255,0.03);border:1px solid var(--border);
+            cursor:pointer;transition:all 0.3s;
+            opacity:0;transform:translateY(12px);
+        }
+        .card-nav.open .nav-card{opacity:1;transform:translateY(0)}
+        .card-nav.open .nav-card:nth-child(1){transition-delay:0.06s}
+        .card-nav.open .nav-card:nth-child(2){transition-delay:0.13s}
+        .card-nav.open .nav-card:nth-child(3){transition-delay:0.20s}
+        .card-nav.open .nav-card:nth-child(4){transition-delay:0.27s}
+        .nav-card:hover{border-color:var(--gold);background:rgba(200,155,60,0.06);box-shadow:0 0 20px rgba(200,155,60,0.08)}
+        .nav-card-label{
+            display:flex;align-items:center;gap:7px;
+            font-size:0.82rem;font-weight:600;color:var(--gold-light);
+            letter-spacing:0.04em;margin-bottom:10px;
+        }
+        .nav-card-links{display:flex;flex-direction:column;gap:4px}
+        .nav-card-link{
+            display:flex;align-items:center;gap:6px;
+            font-size:0.78rem;color:var(--text-dim);
+            padding:4px 6px;border-radius:6px;transition:all 0.2s;
+        }
+        .nav-card-link:hover{color:var(--gold-light);background:rgba(200,155,60,0.05)}
+        @media(max-width:480px){.nav-card-content{grid-template-columns:1fr 1fr}}
 
         /* ── Main Layout ─────────────────────── */
         .app-shell{
@@ -376,15 +437,62 @@
 <!-- Toast -->
 <div class="toast-ctr" id="toastContainer"></div>
 
-<!-- Navbar -->
-<nav class="navbar">
-    <span class="nav-brand">RUNETERRA<sup>FusionRAG</sup></span>
-    <div class="nav-actions">
-        <button class="nav-btn" onclick="showDocumentManager()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px"><use href="#i-board"/></svg>文档</button>
-        <button class="nav-btn" onclick="showHistoryManager()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px"><use href="#i-book"/></svg>历史</button>
-        <button class="nav-btn nav-btn-primary" onclick="showUploadModal()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px"><use href="#i-folder"/></svg>上传</button>
+<!-- Navbar (CardNav style) -->
+<div class="navbar">
+    <div class="card-nav" id="cardNav">
+        <div class="card-nav-top">
+            <button class="hamburger-btn" id="navHamburger" onclick="toggleNavCards()" aria-label="展开导航">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+
+            <span class="nav-brand">RUNETERRA<sup>FusionRAG</sup></span>
+
+            <div class="nav-actions">
+                <button class="nav-btn" onclick="showUploadModal()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px"><use href="#i-folder"/></svg>上传</button>
+                <button class="nav-btn nav-btn-primary" onclick="searchQueryStream()">探索</button>
+            </div>
+        </div>
+
+        <div class="card-nav-content">
+            <div class="nav-card" onclick="switchTab('search')">
+                <div class="nav-card-label"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-search"/></svg>探索</div>
+                <div class="nav-card-links">
+                    <a class="nav-card-link" onclick="event.stopPropagation();switchTab('search')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-search"/></svg>知识检索</a>
+                    <a class="nav-card-link" onclick="event.stopPropagation();switchTab('chat')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-chat"/></svg>多轮对话</a>
+                    <a class="nav-card-link" onclick="event.stopPropagation();switchTab('chat')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-temple"/></svg>论战 / 推演</a>
+                </div>
+            </div>
+
+            <div class="nav-card" onclick="showDocumentManager()">
+                <div class="nav-card-label"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-board"/></svg>档案库</div>
+                <div class="nav-card-links">
+                    <a class="nav-card-link" onclick="event.stopPropagation();showDocumentManager()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-doc"/></svg>文档管理</a>
+                    <a class="nav-card-link" onclick="event.stopPropagation();updateDatabase()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-bolt"/></svg>更新数据库</a>
+                    <a class="nav-card-link" onclick="event.stopPropagation();showUploadModal()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-folder"/></svg>上传文档</a>
+                </div>
+            </div>
+
+            <div class="nav-card" onclick="showHistoryManager()">
+                <div class="nav-card-label"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-book"/></svg>历史</div>
+                <div class="nav-card-links">
+                    <a class="nav-card-link" onclick="event.stopPropagation();showHistoryManager()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-book"/></svg>检索记录</a>
+                    <a class="nav-card-link" onclick="event.stopPropagation();showHistoryManager()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-stats"/></svg>使用统计</a>
+                    <a class="nav-card-link" onclick="event.stopPropagation();clearAllHistory()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-warn"/></svg>清空历史</a>
+                </div>
+            </div>
+
+            <div class="nav-card" onclick="updateDatabase()">
+                <div class="nav-card-label"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-box"/></svg>维护</div>
+                <div class="nav-card-links">
+                    <a class="nav-card-link" onclick="event.stopPropagation();updateDatabase()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-bolt"/></svg>重新索引</a>
+                    <a class="nav-card-link" onclick="event.stopPropagation();loadBackupList()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-box"/></svg>备份管理</a>
+                    <a class="nav-card-link" onclick="event.stopPropagation();showToast('欢迎探索符文之地档案馆','info')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-temple"/></svg>关于</a>
+                </div>
+            </div>
+        </div>
     </div>
-</nav>
+</div>
 
 <div class="app-shell">
     <!-- Search Strip -->
@@ -576,6 +684,14 @@
             requestAnimationFrame(animate);
         }
         requestAnimationFrame(animate);
+
+        // ═══════════ CardNav Expand ═══════════
+        var navExpanded = false;
+        function toggleNavCards() {
+            navExpanded = !navExpanded;
+            document.getElementById('cardNav').classList.toggle('open', navExpanded);
+            document.getElementById('navHamburger').classList.toggle('open', navExpanded);
+        }
 
         // ═══════════ Icon Helper ═══════════
         function icon(name, size) {
