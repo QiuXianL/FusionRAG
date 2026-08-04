@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FusionRAG · SVG 图标预览</title>
+<style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+        background: #040A14; color: #E3E0D8;
+        font-family: 'Inter', 'Microsoft YaHei', sans-serif;
+        padding: 40px 20px;
+    }
+    h1 { font-size: 1.4rem; color: #C89B3C; margin-bottom: 8px; }
+    .sub { color: #8B897F; font-size: 0.85rem; margin-bottom: 30px; }
+    .grid {
+        display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 14px; max-width: 1200px;
+    }
+    .card {
+        background: rgba(10,16,30,0.92); border: 1px solid rgba(200,155,60,0.2);
+        border-radius: 12px; padding: 20px 14px; text-align: center;
+        display: flex; flex-direction: column; align-items: center; gap: 10px;
+        transition: all 0.25s;
+    }
+    .card:hover { border-color: #C89B3C; box-shadow: 0 0 20px rgba(200,155,60,0.15); }
+    .icon-lg { color: #F0E6D2; width: 48px; height: 48px; }
+    .icon-sm { color: #C89B3C; width: 24px; height: 24px; opacity: 0.9; }
+    .name { font-size: 0.8rem; font-weight: 600; color: #E3E0D8; }
+    .orig { font-size: 0.75rem; color: #8B897F; }
+    .orig em { font-style: normal; font-size: 1rem; color: #F0E6D2; margin-right: 3px; }
+    .size-label { font-size: 0.65rem; color: #5d5b55; margin-top: 4px; }
+    .code {
+        font-family: monospace; font-size: 0.6rem; color: #6B4F1E;
+        background: rgba(0,0,0,0.3); padding: 4px 8px; border-radius: 4px;
+        max-width: 100%; overflow-x: auto; white-space: nowrap;
+        display: none;
+    }
+    .toggle-code { font-size: 0.7rem; color: #8B897F; cursor: pointer; }
+    .toggle-code:hover { color: #C89B3C; }
+    .legend { max-width: 1200px; margin-bottom: 20px; color:#8B897F; font-size:0.8rem; line-height:1.7; }
+    .legend b { color:#C89B3C; }
+</style>
+</head>
+<body>
+
+<h1>⚜ 符文之地档案馆 · SVG 图标设计集</h1>
+<p class="sub">统一 24×24 线性风格 · stroke-width 1.7 · 跟随主题变色（currentColor）</p>
+
+<div class="legend">
+    共 17 个图标 + 3 个状态点。每个卡片显示：<b>大图 48px</b>（评估造型）、<b>小图 24px</b>（实际使用大小）、
+    对应的原 emoji。点击"查看代码"可展开 SVG 源码。
+</div>
+
+<div class="grid" id="grid"></div>
+
+<script>
+const icons = [
+  {
+    name: '文档 doc', orig: '📄', code: 'M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z M14 3v5h5 M9 13h6 M9 17h4',
+    paths: ['<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/>','<path d="M14 3v5h5"/>','<path d="M9 13h6M9 17h4"/>']
+  },
+  {
+    name: '对话 chat', orig: '💬', code: 'M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-4.7-1.4L3 20l1.4-4.8A8.5 8.5 0 1 1 21 11.5z',
+    paths: ['<path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-4.7-1.4L3 20l1.4-4.8A8.5 8.5 0 1 1 21 11.5z"/>']
+  },
+  {
+    name: '贤者 temple', orig: '🏛', code: 'M3 8l9-5 9 5v3H3z M5 11v10h14V11 M9 21v-5a3 3 0 0 1 6 0v5',
+    paths: ['<path d="M3 8l9-5 9 5v3H3z"/>','<path d="M5 11v10h14V11"/>','<path d="M9 21v-5a3 3 0 0 1 6 0v5"/>']
+  },
+  {
+    name: '关闭 close', orig: '✕', code: 'M6 6l12 12 M18 6L6 18',
+    paths: ['<path d="M6 6l12 12"/>','<path d="M18 6L6 18"/>']
+  },
+  {
+    name: '警告 warn', orig: '⚠', code: 'M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z M12 9v4 M12 17h.01',
+    paths: ['<path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/>','<path d="M12 9v4"/>','<path d="M12 17h.01"/>']
+  },
+  {
+    name: '统计 stats', orig: '📊', code: 'M4 20h16 M7 20V10 M12 20V6 M17 20V13',
+    paths: ['<path d="M4 20h16"/>','<path d="M7 20V10"/>','<path d="M12 20V6"/>','<path d="M17 20V13"/>']
+  },
+  {
+    name: '闪电 bolt', orig: '⚡', code: 'M13 2L4.5 13.5H11L10 22l8.5-11.5H12z',
+    paths: ['<path d="M13 2L4.5 13.5H11L10 22l8.5-11.5H12z"/>']
+  },
+  {
+    name: '文档库 board', orig: '📋', code: 'M9 4h6v3H9z M5 4a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v17H5z M9 10h6 M9 14h6 M9 18h4',
+    paths: ['<path d="M9 4h6v3H9z"/>','<path d="M5 4a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v17H5z"/>','<path d="M9 10h6M9 14h6M9 18h4"/>']
+  },
+  {
+    name: '历史 book', orig: '📚', code: 'M4 19.5A2.5 2.5 0 0 1 6.5 17H20 M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z',
+    paths: ['<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>','<path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>']
+  },
+  {
+    name: '搜索 search', orig: '🔍', code: 'M11 4a7 7 0 1 1 0 14 7 7 0 0 1 0-14z M21 21l-4.3-4.3',
+    paths: ['<circle cx="11" cy="11" r="7"/>','<path d="M21 21l-4.3-4.3"/>']
+  },
+  {
+    name: '发送 send', orig: '➤', code: 'M22 2L11 13 M22 2l-7 20-4-9-9-4z',
+    paths: ['<path d="M22 2L11 13"/>','<path d="M22 2l-7 20-4-9-9-4z"/>']
+  },
+  {
+    name: '上传 folder', orig: '📁', code: 'M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z',
+    paths: ['<path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>']
+  },
+  {
+    name: '备份 box', orig: '📦', code: 'M21 8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4a2 2 0 0 0 1-1.7z M3.3 7L12 12l8.7-5 M12 22V12',
+    paths: ['<path d="M21 8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4a2 2 0 0 0 1-1.7z"/>','<path d="M3.3 7L12 12l8.7-5"/>','<path d="M12 22V12"/>']
+  },
+  {
+    name: '策略 target', orig: '🎯', code: 'M12 12m-9 0a9 9 0 1 0 18 0 9 9 0 1 0-18 0 M12 12m-5 0a5 5 0 1 0 10 0 5 5 0 1 0-10 0 M12 12m-1 0a1 1 0 1 0 2 0 1 1 0 1 0-2 0',
+    paths: ['<circle cx="12" cy="12" r="9"/>','<circle cx="12" cy="12" r="5"/>','<circle cx="12" cy="12" r="1"/>']
+  },
+  {
+    name: '用户 user', orig: '🧑', code: 'M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2 M12 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8z',
+    paths: ['<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>','<circle cx="12" cy="7" r="4"/>']
+  },
+  {
+    name: '关键词 keyword', orig: '🔤', code: 'M4 5h16v14H4z M8 9h8 M8 13h8 M8 17h5',
+    paths: ['<rect x="4" y="5" width="16" height="14" rx="2"/>','<path d="M8 9h8M8 13h8M8 17h5"/>']
+  },
+  {
+    name: '状态点·就绪', orig: '🟢', code: '状态点（填充圆，带发光）', dot: '#4ADE80',
+    paths: ['<circle cx="12" cy="12" r="5" fill="currentColor" stroke="none"/>']
+  },
+  {
+    name: '状态点·离线', orig: '🔴', code: '状态点（填充圆，带发光）', dot: '#F87171',
+    paths: ['<circle cx="12" cy="12" r="5" fill="currentColor" stroke="none"/>']
+  },
+  {
+    name: '状态点·连接中', orig: '🟡', code: '状态点（填充圆，带发光）', dot: '#FACC15',
+    paths: ['<circle cx="12" cy="12" r="5" fill="currentColor" stroke="none"/>']
+  }
+];
+
+function svgIcon(ic, size) {
+    const attrs = `width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"`;
+    return `<svg class="${size===48?'icon-lg':'icon-sm'}" ${attrs}>${ic.paths.join('')}</svg>`;
+}
+
+const grid = document.getElementById('grid');
+icons.forEach(ic => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    const dotColor = ic.dot ? ` style="color:${ic.dot};filter:drop-shadow(0 0 4px ${ic.dot})"` : '';
+    card.innerHTML = `
+        <div>${svgIcon(ic,48)}</div>
+        <div class="name">${ic.name}</div>
+        <div class="orig"><em>${ic.orig}</em> → SVG</div>
+        <div style="display:flex;gap:12px;align-items:flex-end">
+            <div>
+                <svg class="icon-sm" ${ic.dot ? `style="color:${ic.dot}"` : ''} width="24" height="24" viewBox="0 0 24 24" fill="${ic.dot?'currentColor':'none'}" stroke="${ic.dot?'none':'currentColor'}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${ic.paths.join('')}</svg>
+                <div class="size-label">24px 实际</div>
+            </div>
+        </div>
+        <span class="toggle-code" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='block'?'none':'block'">查看代码</span>
+        <div class="code">${ic.code}</div>
+    `;
+    grid.appendChild(card);
+});
+</script>
+
+</body>
+</html>
