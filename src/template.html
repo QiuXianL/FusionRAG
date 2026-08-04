@@ -39,7 +39,6 @@
             border-radius:16px;
             backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
             box-shadow:0 4px 30px rgba(0,0,0,0.4), 0 0 30px rgba(200,155,60,0.04);
-            overflow:hidden;
             transition:box-shadow 0.4s;
         }
         .card-nav.open{box-shadow:0 8px 40px rgba(0,0,0,0.5), 0 0 40px rgba(200,155,60,0.08)}
@@ -87,14 +86,26 @@
         .hamburger-btn.open .hamburger-line:first-child{transform:translateY(4px) rotate(45deg)}
         .hamburger-btn.open .hamburger-line:last-child{transform:translateY(-4px) rotate(-45deg)}
 
-        /* Card content */
+        /* Card content (绝对定位浮出层，不占文档流) */
         .card-nav-content{
+            position:absolute;top:calc(100% + 6px);left:0;right:0;
             display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;
-            padding:0 8px 8px;
+            padding:8px;
+            background:rgba(10,16,30,0.96);
+            border:1px solid var(--border-gold);
+            border-radius:14px;
+            backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+            box-shadow:0 10px 40px rgba(0,0,0,0.5), 0 0 40px rgba(200,155,60,0.06);
             max-height:0;overflow:hidden;opacity:0;
-            transition:max-height 0.45s cubic-bezier(0.22,1,0.36,1), opacity 0.35s;
+            transform:translateY(-8px);
+            transition:max-height 0.4s cubic-bezier(0.22,1,0.36,1), opacity 0.3s, transform 0.4s cubic-bezier(0.22,1,0.36,1);
+            z-index:45;
+            pointer-events:none;
         }
-        .card-nav.open .card-nav-content{max-height:260px;opacity:1}
+        .card-nav.open .card-nav-content{
+            max-height:340px;opacity:1;transform:translateY(0);
+            pointer-events:auto;
+        }
         .nav-card{
             border-radius:12px;padding:12px 14px;
             background:rgba(255,255,255,0.03);border:1px solid var(--border);
