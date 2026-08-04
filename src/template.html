@@ -138,7 +138,7 @@
         }
         @media(min-width:768px){.app-shell{height:calc(100vh - 52px)}}
 
-        /* ── Search Bar (Uiverse underline style) ── */
+        /* ── Search Bar (金色描边圆角框) ── */
         .search-strip{
             padding:12px 14px 16px;display:flex;align-items:center;gap:14px;
             background:rgba(6,12,22,0.6);border-bottom:1px solid var(--border);
@@ -146,23 +146,25 @@
         @media(min-width:768px){.search-strip{padding:14px 36px 18px}}
         .search-input-wrap{
             flex:1;display:flex;align-items:center;gap:12px;
-            max-width:640px;position:relative;
+            max-width:640px;
+            background:rgba(200,155,60,0.06);
+            border:1.5px solid var(--gold);border-radius:14px;
+            padding:4px 4px 4px 16px;
+            transition:all 0.3s;
+            box-shadow:0 0 18px rgba(200,155,60,0.12);
         }
-        .search-input-wrap .search-icon{color:var(--gold);flex-shrink:0;width:18px;height:18px}
+        .search-input-wrap:hover{background:rgba(200,155,60,0.09)}
+        .search-input-wrap:focus-within{
+            box-shadow:0 0 28px rgba(200,155,60,0.25);
+            border-color:var(--gold-bright);
+        }
+        .search-input-wrap .search-icon{color:var(--gold-bright);flex-shrink:0;width:18px;height:18px;filter:drop-shadow(0 0 4px rgba(200,155,60,0.5))}
         .search-input-wrap input{
             flex:1;border:none;background:transparent;font-size:0.92rem;color:var(--text);
             font-family:inherit;outline:none;min-width:0;
-            padding:0.65em 0.2em;letter-spacing:0.02em;
-            border-bottom:1px solid rgba(200,155,60,0.25);
+            padding:0.65em 0.1em;letter-spacing:0.02em;
         }
-        .search-input-wrap:hover input{background:rgba(200,155,60,0.04)}
         .search-input-wrap input::placeholder{color:var(--text-dim)}
-        .search-input-border{
-            position:absolute;bottom:0;left:0;height:2px;width:0%;
-            background:var(--gold);box-shadow:0 0 8px rgba(200,155,60,0.5);
-            transition:width 0.35s;
-        }
-        .search-input-wrap input:focus ~ .search-input-border{width:100%}
 
         /* ── Uiverse btn-17 button (黑底金边, hover扫光不翻转) ── */
         .btn-lol{
@@ -346,23 +348,25 @@
         }
         @media(min-width:768px){.chat-input-wrap{padding:12px 20px 14px}}
         .chat-input-box{
-            flex:0 1 640px;display:flex;align-items:center;gap:10px;position:relative;
+            flex:0 1 640px;display:flex;align-items:center;gap:10px;
             max-width:640px;min-width:0;
+            background:rgba(200,155,60,0.06);
+            border:1.5px solid var(--gold);border-radius:14px;
+            padding:4px 4px 4px 16px;
+            transition:all 0.3s;
+            box-shadow:0 0 18px rgba(200,155,60,0.12);
+        }
+        .chat-input-box:hover{background:rgba(200,155,60,0.09)}
+        .chat-input-box:focus-within{
+            box-shadow:0 0 28px rgba(200,155,60,0.25);
+            border-color:var(--gold-bright);
         }
         .chat-input-box input{
-            flex:1;border:none;background:transparent;font-size:0.88rem;color:var(--text);
+            flex:1;border:none;background:transparent;font-size:0.9rem;color:var(--text);
             font-family:inherit;outline:none;min-width:0;
-            padding:0.65em 0.2em;letter-spacing:0.02em;
-            border-bottom:1px solid rgba(200,155,60,0.25);
+            padding:0.6em 0.1em;letter-spacing:0.02em;
         }
-        .chat-input-box:hover input{background:rgba(200,155,60,0.04)}
         .chat-input-box input::placeholder{color:var(--text-dim)}
-        .chat-input-border{
-            position:absolute;bottom:0;left:0;height:2px;width:0%;
-            background:var(--gold);box-shadow:0 0 8px rgba(200,155,60,0.5);
-            transition:width 0.35s;
-        }
-        .chat-input-box input:focus ~ .chat-input-border{width:100%}
         .chat-send-btn{
             width:40px;height:40px;border-radius:50%;flex-shrink:0;
             background:#000;color:var(--gold);border:2px solid var(--gold);
@@ -583,7 +587,6 @@
         <div class="search-input-wrap">
             <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-search"/></svg>
             <input type="text" id="queryInput" placeholder="探索符文之地的秘密…" autocomplete="off" />
-            <span class="search-input-border"></span>
         </div>
         <button class="btn-lol" onclick="searchQueryStream()" id="searchBtn"><span class="text">探索</span></button>
         <div class="search-meta">
@@ -633,7 +636,6 @@
             <div class="chat-input-wrap">
                 <div class="chat-input-box">
                     <input type="text" id="chatInput" placeholder="输入消息，和贤者对话…" autocomplete="off" />
-                    <span class="chat-input-border"></span>
                 </div>
                 <button class="chat-send-btn" id="chatSendBtn" onclick="sendChatMessage()" aria-label="发送"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-send"/></svg></button>
             </div>
