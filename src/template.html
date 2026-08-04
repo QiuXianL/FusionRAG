@@ -1083,7 +1083,8 @@
             } catch (e) {}
         }
         function viewDoc(sn) {
-            fetch('/api/document/content/' + encodeURIComponent(sn)).then(function(r) { return r.json(); }).then(function(d) {
+            var realName = decodeURIComponent(sn);
+            fetch('/api/document/content/' + encodeURIComponent(realName)).then(function(r) { return r.json(); }).then(function(d) {
                 if (d.success) {
                     curDoc = d;
                     document.getElementById('viewDocumentName').textContent = d.source.name;
@@ -1113,9 +1114,10 @@
             } catch (e) { showToast('保存失败: ' + e.message, 'error'); }
         }
         async function delDoc(sn) {
-            if (!confirm('删除 "' + decodeURIComponent(sn) + '" ？')) return;
+            var realName = decodeURIComponent(sn);
+            if (!confirm('删除 "' + realName + '" ？')) return;
             try {
-                var resp = await fetch('/api/document/delete', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ source_name: sn }) });
+                var resp = await fetch('/api/document/delete', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ source_name: realName }) });
                 var d = await resp.json();
                 if (d.success) { showToast('删除成功！'); refreshDocMgr(); }
                 else { showToast(d.error || '删除失败', 'error'); }
