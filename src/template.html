@@ -138,34 +138,83 @@
         }
         @media(min-width:768px){.app-shell{height:calc(100vh - 52px)}}
 
-        /* ── Search Bar ──────────────────────── */
+        /* ── Search Bar (Uiverse underline style) ── */
         .search-strip{
-            padding:10px 14px;display:flex;align-items:center;gap:10px;
+            padding:12px 14px 16px;display:flex;align-items:center;gap:14px;
             background:rgba(6,12,22,0.6);border-bottom:1px solid var(--border);
         }
-        @media(min-width:768px){.search-strip{padding:12px 36px}}
+        @media(min-width:768px){.search-strip{padding:14px 36px 18px}}
         .search-input-wrap{
-            flex:1;display:flex;align-items:center;
-            background:var(--bg-card);border:1px solid var(--border-gold);border-radius:9999px;
-            padding:3px 3px 3px 18px;max-width:640px;
-            transition:all 0.3s;
+            flex:1;display:flex;align-items:center;gap:12px;
+            max-width:640px;position:relative;
         }
-        .search-input-wrap:focus-within{border-color:var(--gold);box-shadow:0 0 20px rgba(200,155,60,0.12)}
+        .search-input-wrap .search-icon{color:var(--gold);flex-shrink:0;width:18px;height:18px}
         .search-input-wrap input{
-            flex:1;border:none;background:transparent;font-size:0.88rem;color:var(--text);
+            flex:1;border:none;background:transparent;font-size:0.92rem;color:var(--text);
             font-family:inherit;outline:none;min-width:0;
+            padding:0.65em 0.2em;letter-spacing:0.02em;
+            border-bottom:1px solid rgba(200,155,60,0.25);
         }
+        .search-input-wrap:hover input{background:rgba(200,155,60,0.04)}
         .search-input-wrap input::placeholder{color:var(--text-dim)}
-        .search-input-wrap button{
-            position:relative;overflow:hidden;
-            background:linear-gradient(135deg,#C89B3C,#D4A843,#B8860B,#C89B3C);background-size:200% 100%;
-            color:#1A1206;border:none;border-radius:9999px;padding:8px 18px;
-            font-size:0.82rem;font-weight:600;font-family:inherit;cursor:pointer;
-            animation:shimmer 3s ease-in-out infinite;transition:all 0.3s;
-            white-space:nowrap;
+        .search-input-border{
+            position:absolute;bottom:0;left:0;height:2px;width:0%;
+            background:var(--gold);box-shadow:0 0 8px rgba(200,155,60,0.5);
+            transition:width 0.35s;
         }
-        .search-input-wrap button:hover{box-shadow:0 0 20px rgba(200,155,60,0.3)}
-        @keyframes shimmer{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+        .search-input-wrap input:focus ~ .search-input-border{width:100%}
+
+        /* ── Uiverse btn-17 button (黑底金边, hover扫光不翻转) ── */
+        .btn-lol{
+            position:relative;overflow:hidden;z-index:0;
+            background:#000;color:var(--gold-light);
+            border:2px solid var(--gold);border-radius:99rem;
+            padding:0.6rem 1.8rem;font-size:0.8rem;font-weight:600;
+            letter-spacing:0.05em;text-transform:uppercase;
+            font-family:inherit;cursor:pointer;
+            transition:box-shadow 0.3s;
+        }
+        .btn-lol:hover{box-shadow:0 0 20px rgba(200,155,60,0.25)}
+        .btn-lol:disabled{opacity:0.5;cursor:default}
+        .btn-lol .text{position:relative;z-index:2;display:block}
+        .btn-lol:after,.btn-lol:before{
+            --skew:0.2;
+            background:linear-gradient(90deg,transparent,rgba(200,155,60,0.85),transparent);
+            content:"";display:block;height:102%;
+            left:calc(-50% - 50% * var(--skew));
+            pointer-events:none;position:absolute;top:-104%;
+            transform:skew(calc(150deg * var(--skew))) translateY(var(--progress,0));
+            transition:transform 0.25s ease;width:100%;z-index:1;
+        }
+        .btn-lol:after{--progress:0%;left:calc(50% + 50% * var(--skew));top:102%;z-index:0}
+        .btn-lol:hover:before{--progress:100%}
+        .btn-lol:hover:after{--progress:-102%}
+
+        .btn-lol-sm{
+            position:relative;overflow:hidden;z-index:0;
+            background:#000;color:var(--gold-light);
+            border:1.5px solid var(--gold);border-radius:99rem;
+            padding:0.4rem 1.1rem;font-size:0.72rem;font-weight:600;
+            letter-spacing:0.04em;text-transform:uppercase;
+            font-family:inherit;cursor:pointer;
+            transition:box-shadow 0.3s;
+        }
+        .btn-lol-sm:hover{box-shadow:0 0 16px rgba(200,155,60,0.25)}
+        .btn-lol-sm:disabled{opacity:0.5;cursor:default}
+        .btn-lol-sm .text{position:relative;z-index:2;display:block}
+        .btn-lol-sm:after,.btn-lol-sm:before{
+            --skew:0.2;
+            background:linear-gradient(90deg,transparent,rgba(200,155,60,0.85),transparent);
+            content:"";display:block;height:102%;
+            left:calc(-50% - 50% * var(--skew));
+            pointer-events:none;position:absolute;top:-104%;
+            transform:skew(calc(150deg * var(--skew))) translateY(var(--progress,0));
+            transition:transform 0.25s ease;width:100%;z-index:1;
+        }
+        .btn-lol-sm:after{--progress:0%;left:calc(50% + 50% * var(--skew));top:102%;z-index:0}
+        .btn-lol-sm:hover:before{--progress:100%}
+        .btn-lol-sm:hover:after{--progress:-102%}
+
         .search-meta{display:flex;align-items:center;gap:6px;font-size:0.74rem;color:var(--text-dim);white-space:nowrap}
         .search-meta select{
             padding:4px 8px;border-radius:9999px;border:1px solid var(--border-gold);
@@ -462,8 +511,8 @@
             <span class="nav-brand">RUNETERRA<sup>FusionRAG</sup></span>
 
             <div class="nav-actions">
-                <button class="nav-btn" onclick="showUploadModal()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px"><use href="#i-folder"/></svg>上传</button>
-                <button class="nav-btn nav-btn-primary" onclick="searchQueryStream()">探索</button>
+                <button class="btn-lol-sm" onclick="showUploadModal()"><span class="text"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px"><use href="#i-folder"/></svg>上传</span></button>
+                <button class="btn-lol-sm" onclick="searchQueryStream()"><span class="text">探索</span></button>
             </div>
         </div>
 
@@ -511,9 +560,11 @@
     <!-- Search Strip -->
     <div class="search-strip">
         <div class="search-input-wrap">
+            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-search"/></svg>
             <input type="text" id="queryInput" placeholder="探索符文之地的秘密…" autocomplete="off" />
-            <button onclick="searchQueryStream()" id="searchBtn">探索</button>
+            <span class="search-input-border"></span>
         </div>
+        <button class="btn-lol" onclick="searchQueryStream()" id="searchBtn"><span class="text">探索</span></button>
         <div class="search-meta">
             <span>结果</span>
             <select id="topKSelect">
@@ -810,7 +861,7 @@
             for (var i = 0; i < cards.length; i++) { cards[i].remove(); }
             lw.classList.remove('hidden');
             sb.disabled = true;
-            sb.textContent = '探索中…';
+            sb.querySelector('.text').textContent = '探索中…';
 
             try {
                 var resp = await fetch('/api/search/stream', {
@@ -866,7 +917,7 @@
             } finally {
                 lw.classList.add('hidden');
                 sb.disabled = false;
-                sb.textContent = '探索';
+                sb.querySelector('.text').textContent = '探索';
                 abortCtrl = null;
             }
         }
