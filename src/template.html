@@ -698,6 +698,15 @@
             if (navExpanded) toggleNavCards();
         }
 
+        // 点击导航及展开栏以外的任意区域时自动收起
+        document.addEventListener('click', function(e) {
+            if (!navExpanded) return;
+            var nav = document.getElementById('cardNav');
+            if (nav && !nav.contains(e.target)) {
+                collapseNavCards();
+            }
+        });
+
         // ═══════════ Icon Helper ═══════════
         function icon(name, size) {
             size = size || 16;
