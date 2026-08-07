@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FusionRAG · 导航栏增强预览</title>
+<style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    :root{
+        --bg-deep:#040A14;--bg-card:rgba(10,16,30,0.94);
+        --gold:#C89B3C;--gold-bright:#F0D680;--gold-light:#F0E6D2;--gold-dim:#6B4F1E;
+        --text:#E3E0D8;--text-dim:#8B897F;
+        --border:rgba(200,155,60,0.12);--border-gold:rgba(200,155,60,0.3);
+    }
+    body{
+        background:#040A14;color:#E3E0D8;
+        font-family:'Inter','Microsoft YaHei',sans-serif;
+        min-height:100vh;
+    }
+    /* 星空背景模拟 */
+    .stars{
+        position:fixed;inset:0;z-index:0;pointer-events:none;
+        background:
+            radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.6), transparent),
+            radial-gradient(1px 1px at 25% 35%, rgba(255,255,255,0.4), transparent),
+            radial-gradient(1px 1px at 40% 8%, rgba(255,255,255,0.5), transparent),
+            radial-gradient(1.5px 1.5px at 55% 22%, rgba(200,155,60,0.5), transparent),
+            radial-gradient(1px 1px at 65% 45%, rgba(255,255,255,0.3), transparent),
+            radial-gradient(1px 1px at 78% 12%, rgba(255,255,255,0.5), transparent),
+            radial-gradient(1.5px 1.5px at 88% 30%, rgba(29,167,213,0.4), transparent),
+            radial-gradient(1px 1px at 15% 60%, rgba(255,255,255,0.4), transparent),
+            radial-gradient(1px 1px at 32% 72%, rgba(255,255,255,0.3), transparent),
+            radial-gradient(1px 1px at 50% 85%, rgba(255,255,255,0.4), transparent);
+        background-color:#040A14;
+    }
+    .page-top{position:relative;z-index:5;text-align:center;padding:22px 20px 6px}
+    .page-top h1{font-size:1.15rem;color:#C89B3C;font-weight:600}
+    .page-top p{font-size:0.78rem;color:#8B897F;margin-top:4px}
+
+    /* ═══════ 增强版导航栏 ═══════ */
+    .navbar{
+        position:relative;z-index:30;display:flex;justify-content:center;
+        padding:14px 14px 8px;
+    }
+    .card-nav{
+        position:relative;z-index:40;
+        width:min(760px,94%);
+        background:linear-gradient(180deg,#171226 0%,#0E1424 55%,#0B1020 100%);
+        border:1.5px solid var(--gold);
+        border-radius:16px;
+        backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+        box-shadow:
+            0 6px 34px rgba(0,0,0,0.55),
+            0 0 28px rgba(200,155,60,0.22),
+            inset 0 1px 0 rgba(240,214,128,0.15);
+        transition:box-shadow 0.4s;
+    }
+    /* 顶部金线 */
+    .card-nav::before{
+        content:'';position:absolute;top:0;left:14px;right:14px;height:1px;
+        background:linear-gradient(90deg,transparent,var(--gold-bright),transparent);
+        opacity:0.9;
+    }
+    .card-nav-top{
+        position:relative;height:54px;display:flex;align-items:center;justify-content:space-between;
+        padding:6px 8px 6px 16px;
+    }
+    .hamburger-btn{
+        width:38px;height:38px;border-radius:10px;
+        background:rgba(200,155,60,0.08);border:1px solid rgba(200,155,60,0.35);
+        display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+        cursor:pointer;transition:all 0.3s;
+    }
+    .hamburger-btn:hover{border-color:var(--gold-bright);box-shadow:0 0 14px rgba(200,155,60,0.25)}
+    .hamburger-line{width:18px;height:2px;background:var(--gold-bright)}
+    .nav-brand{
+        position:absolute;left:50%;transform:translateX(-50%);
+        font-family:Georgia,'Cinzel',serif;font-size:1.1rem;font-weight:700;letter-spacing:0.1em;
+        background:linear-gradient(180deg,#FFE9A8 0%,var(--gold-bright) 45%,var(--gold) 100%);
+        -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+        filter:drop-shadow(0 0 10px rgba(240,214,128,0.35));
+        white-space:nowrap;
+    }
+    .nav-brand sup{font-size:0.45rem;font-weight:400;font-family:'Inter',sans-serif;-webkit-text-fill-color:var(--text-dim);margin-left:2px}
+    .nav-actions{display:flex;align-items:center;gap:8px}
+
+    /* 按钮 */
+    .btn-lol-sm{
+        position:relative;overflow:hidden;z-index:0;
+        background:#000;color:var(--gold-bright);
+        border:1.5px solid var(--gold);border-radius:99rem;
+        padding:0.4rem 1.1rem;font-size:0.72rem;font-weight:600;
+        letter-spacing:0.04em;text-transform:uppercase;
+        font-family:inherit;cursor:pointer;
+        transition:box-shadow 0.3s;
+    }
+    .btn-lol-sm:hover{box-shadow:0 0 16px rgba(200,155,60,0.3)}
+    .btn-lol-sm .text{position:relative;z-index:2;display:block}
+    .btn-lol-sm:after,.btn-lol-sm:before{
+        --skew:0.2;
+        background:linear-gradient(90deg,transparent,rgba(200,155,60,0.9),transparent);
+        content:"";display:block;height:102%;
+        left:calc(-50% - 50%*var(--skew));pointer-events:none;position:absolute;top:-104%;
+        transform:skew(calc(150deg*var(--skew))) translateY(var(--progress,0));
+        transition:transform 0.25s ease;width:100%;z-index:1;
+    }
+    .btn-lol-sm:after{--progress:0%;left:calc(50% + 50%*var(--skew));top:102%;z-index:0}
+    .btn-lol-sm:hover:before{--progress:100%}
+    .btn-lol-sm:hover:after{--progress:-102%}
+
+    /* 展开卡片 */
+    .card-nav-content{
+        position:absolute;top:calc(100% + 6px);left:0;right:0;
+        display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;
+        padding:8px;background:rgba(14,18,34,0.97);
+        border:1.5px solid var(--gold);border-radius:14px;
+        backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+        box-shadow:0 12px 44px rgba(0,0,0,0.55),0 0 34px rgba(200,155,60,0.15);
+        max-height:0;overflow:hidden;opacity:0;transform:translateY(-8px);
+        transition:max-height 0.4s cubic-bezier(0.22,1,0.36,1),opacity 0.3s,transform 0.4s;
+        z-index:45;pointer-events:none;
+    }
+    .card-nav.open .card-nav-content{max-height:340px;opacity:1;transform:translateY(0);pointer-events:auto}
+    .nav-card{
+        border-radius:12px;padding:12px 14px;
+        background:rgba(255,255,255,0.03);border:1px solid rgba(200,155,60,0.15);
+        cursor:pointer;transition:all 0.3s;
+        opacity:0;transform:translateY(12px);
+    }
+    .card-nav.open .nav-card{opacity:1;transform:translateY(0)}
+    .card-nav.open .nav-card:nth-child(1){transition-delay:0.06s}
+    .card-nav.open .nav-card:nth-child(2){transition-delay:0.13s}
+    .card-nav.open .nav-card:nth-child(3){transition-delay:0.20s}
+    .card-nav.open .nav-card:nth-child(4){transition-delay:0.27s}
+    .nav-card:hover{border-color:var(--gold);background:rgba(200,155,60,0.08);box-shadow:0 0 20px rgba(200,155,60,0.12)}
+    .nav-card-label{display:flex;align-items:center;gap:7px;font-size:0.82rem;font-weight:600;color:var(--gold-bright);letter-spacing:0.04em;margin-bottom:10px}
+    .nav-card-links{display:flex;flex-direction:column;gap:4px}
+    .nav-card-link{display:flex;align-items:center;gap:6px;font-size:0.78rem;color:var(--text-dim);padding:4px 6px;border-radius:6px;transition:all 0.2s}
+    .nav-card-link:hover{color:var(--gold-light);background:rgba(200,155,60,0.06)}
+
+    /* 对比：旧版导航 */
+    .compare{position:relative;z-index:5;max-width:760px;margin:36px auto 0;padding:0 20px}
+    .compare h2{font-size:0.85rem;color:#8B897F;font-weight:400;margin-bottom:14px;text-align:center}
+    .old-nav{
+        position:relative;z-index:10;display:flex;justify-content:center;
+    }
+    .old-card{
+        position:relative;z-index:20;width:min(760px,100%);
+        background:rgba(10,16,30,0.92);
+        border:1px solid var(--border-gold);border-radius:16px;
+        backdrop-filter:blur(20px);
+        box-shadow:0 4px 30px rgba(0,0,0,0.4);
+        transition:box-shadow 0.4s;
+        height:54px;display:flex;align-items:center;justify-content:space-between;padding:6px 8px 6px 16px;
+    }
+    .old-brand{
+        position:absolute;left:50%;transform:translateX(-50%);
+        font-family:Georgia,serif;font-size:0.95rem;font-weight:700;letter-spacing:0.08em;
+        background:linear-gradient(180deg,var(--gold-bright),var(--gold),var(--gold-dim));
+        -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+        filter:drop-shadow(0 0 6px rgba(200,155,60,0.25));white-space:nowrap;
+    }
+    .old-btn{
+        background:linear-gradient(135deg,#C89B3C,#B8860B);color:#1A1206;border:none;border-radius:9999px;
+        padding:6px 16px;font-size:0.72rem;font-weight:600;font-family:inherit;cursor:pointer;
+    }
+    .old-hamburger{width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,0.03);border:1px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
+    .old-hamburger span{width:18px;height:2px;background:var(--gold)}
+    .caption{text-align:center;font-size:0.72rem;color:#6b6a64;margin-top:10px}
+
+    .hint{position:relative;z-index:5;text-align:center;margin-top:30px;font-size:0.8rem;color:#8B897F}
+    .hint b{color:#C89B3C}
+</style>
+</head>
+<body>
+<div class="stars"></div>
+
+<div class="page-top">
+    <h1>⚜ 导航栏增强 · 预览</h1>
+    <p>对比新（上）旧（下）效果</p>
+</div>
+
+<!-- 新版导航栏（增强） -->
+<div class="navbar">
+    <div class="card-nav" id="cardNav">
+        <div class="card-nav-top">
+            <button class="hamburger-btn" onclick="toggleNav(this)">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+            <span class="nav-brand">RUNETERRA<sup>FusionRAG</sup></span>
+            <div class="nav-actions">
+                <button class="btn-lol-sm"><span class="text">上传</span></button>
+                <button class="btn-lol-sm"><span class="text">探索</span></button>
+            </div>
+        </div>
+        <div class="card-nav-content">
+            <div class="nav-card"><div class="nav-card-label">探索</div><div class="nav-card-links"><span class="nav-card-link">知识检索</span><span class="nav-card-link">多轮对话</span><span class="nav-card-link">论战推演</span></div></div>
+            <div class="nav-card"><div class="nav-card-label">档案库</div><div class="nav-card-links"><span class="nav-card-link">文档管理</span><span class="nav-card-link">更新数据库</span><span class="nav-card-link">上传文档</span></div></div>
+            <div class="nav-card"><div class="nav-card-label">历史</div><div class="nav-card-links"><span class="nav-card-link">检索记录</span><span class="nav-card-link">使用统计</span><span class="nav-card-link">清空历史</span></div></div>
+            <div class="nav-card"><div class="nav-card-label">维护</div><div class="nav-card-links"><span class="nav-card-link">重新索引</span><span class="nav-card-link">备份管理</span><span class="nav-card-link">关于</span></div></div>
+        </div>
+    </div>
+</div>
+<div class="hint">⬆ 新版：金边 + 外发光 + 顶部金线 + 品牌字提亮 · 点汉堡看展开效果</div>
+
+<!-- 旧版导航栏（对比） -->
+<div class="compare">
+    <h2>— 旧版（对比）—</h2>
+    <div class="old-nav">
+        <div class="old-card">
+            <div class="old-hamburger"><span></span><span></span></div>
+            <span class="old-brand">RUNETERRA<sup style="font-size:0.5rem">FusionRAG</sup></span>
+            <div style="display:flex;gap:8px">
+                <button class="old-btn">上传</button>
+                <button class="old-btn">探索</button>
+            </div>
+        </div>
+    </div>
+    <p class="caption">⬇ 旧版：暗色玻璃 + 细金边，无明显光效</p>
+</div>
+
+<script>
+function toggleNav(btn){
+    var nav = document.getElementById('cardNav');
+    nav.classList.toggle('open');
+    btn.classList.toggle('open');
+    var lines = btn.querySelectorAll('.hamburger-line');
+    lines[0].style.transform = nav.classList.contains('open') ? 'translateY(4px) rotate(45deg)' : '';
+    lines[1].style.transform = nav.classList.contains('open') ? 'translateY(-4px) rotate(-45deg)' : '';
+}
+</script>
+</body>
+</html>

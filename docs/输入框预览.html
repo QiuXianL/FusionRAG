@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FusionRAG · 输入框显眼度预览</title>
+<style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    :root{
+        --gold:#C89B3C;--gold-bright:#F0D680;--gold-light:#F0E6D2;--gold-dim:#6B4F1E;
+        --text:#E3E0D8;--text-dim:#8B897F;
+        --border:rgba(200,155,60,0.12);--border-gold:rgba(200,155,60,0.3);
+    }
+    body{
+        background:#040A14;color:#E3E0D8;
+        font-family:'Inter','Microsoft YaHei',sans-serif;
+        padding:40px 20px;
+    }
+    h1{font-size:1.3rem;color:#C89B3C;margin-bottom:6px}
+    .sub{color:#8B897F;font-size:0.83rem;margin-bottom:34px}
+    .demo-card{
+        background:rgba(10,16,30,0.92);border:1px solid rgba(200,155,60,0.2);
+        border-radius:14px;max-width:680px;padding:26px;margin-bottom:24px;
+    }
+    .demo-card h2{font-size:0.92rem;color:#F0E6D2;margin-bottom:6px;font-weight:600}
+    .demo-card .tag{display:inline-block;font-size:0.66rem;color:#1A1206;background:#C89B3C;border-radius:9999px;padding:2px 10px;margin-bottom:16px;font-weight:600}
+    .demo-card .desc{font-size:0.74rem;color:#8B897F;margin:14px 0 0;line-height:1.6}
+
+    /* ═══ 当前：下划线式 ═══ */
+    .underline-input{
+        display:flex;align-items:center;gap:10px;position:relative;max-width:520px;
+    }
+    .underline-input .icon{color:#C89B3C;width:17px;height:17px;flex-shrink:0}
+    .underline-input input{
+        flex:1;border:none;background:transparent;font-size:0.92rem;color:#E3E0D8;
+        font-family:inherit;outline:none;padding:0.65em 0.2em;letter-spacing:0.02em;
+        border-bottom:1px solid rgba(200,155,60,0.25);
+    }
+    .underline-input input::placeholder{color:#6b6a64}
+    .underline-input .line{
+        position:absolute;bottom:0;left:0;height:2px;width:0%;
+        background:#C89B3C;box-shadow:0 0 8px rgba(200,155,60,0.5);
+        transition:width 0.35s;
+    }
+    .underline-input input:focus ~ .line{width:100%}
+
+    /* ═══ 方案A：金色描边圆角框 ═══ */
+    .box-input{
+        display:flex;align-items:center;gap:12px;max-width:520px;
+        background:rgba(200,155,60,0.06);
+        border:1.5px solid #C89B3C;border-radius:14px;
+        padding:4px 4px 4px 16px;
+        transition:all 0.3s;
+        box-shadow:0 0 18px rgba(200,155,60,0.12);
+    }
+    .box-input:hover{background:rgba(200,155,60,0.09)}
+    .box-input:focus-within{
+        box-shadow:0 0 28px rgba(200,155,60,0.25);
+        border-color:#F0D680;
+    }
+    .box-input .icon{color:#F0D680;width:18px;height:18px;flex-shrink:0;filter:drop-shadow(0 0 4px rgba(200,155,60,0.5))}
+    .box-input input{
+        flex:1;border:none;background:transparent;font-size:0.92rem;color:#E3E0D8;
+        font-family:inherit;outline:none;padding:0.65em 0.1em;letter-spacing:0.02em;
+    }
+    .box-input input::placeholder{color:#8B897F}
+    .box-input .go{
+        background:#C89B3C;color:#1A1206;border:none;border-radius:10px;
+        padding:0.6em 1.4em;font-size:0.78rem;font-weight:600;cursor:pointer;font-family:inherit;
+        transition:all 0.25s;
+    }
+    .box-input .go:hover{background:#F0D680;box-shadow:0 0 16px rgba(240,214,128,0.4)}
+
+    /* ═══ 方案B：加粗发光下划线 ═══ */
+    .glow-underline{
+        display:flex;align-items:center;gap:10px;position:relative;max-width:520px;
+    }
+    .glow-underline .icon{color:#F0D680;width:18px;height:18px;flex-shrink:0;filter:drop-shadow(0 0 5px rgba(200,155,60,0.6))}
+    .glow-underline input{
+        flex:1;border:none;background:transparent;font-size:0.95rem;color:#F0E6D2;
+        font-family:inherit;outline:none;padding:0.7em 0.2em;letter-spacing:0.02em;font-weight:500;
+        border-bottom:2px solid #C89B3C;
+        box-shadow:0 4px 14px -6px rgba(200,155,60,0.35);
+    }
+    .glow-underline input::placeholder{color:#8B897F}
+    .glow-underline .line{
+        position:absolute;bottom:-2px;left:0;height:3px;width:0%;
+        background:linear-gradient(90deg,#F0D680,#C89B3C);
+        box-shadow:0 0 12px rgba(240,214,128,0.7);
+        transition:width 0.35s;
+    }
+    .glow-underline input:focus ~ .line{width:100%}
+
+    /* ═══ 方案C：暗色圆角大框 ═══ */
+    .dark-box{
+        display:flex;align-items:center;gap:12px;max-width:520px;
+        background:rgba(12,18,34,0.95);
+        border:1px solid rgba(200,155,60,0.4);border-radius:12px;
+        padding:4px 4px 4px 16px;
+        transition:all 0.3s;
+        box-shadow:0 0 0 0 rgba(200,155,60,0);
+    }
+    .dark-box:hover{border-color:#C89B3C}
+    .dark-box:focus-within{border-color:#F0D680;box-shadow:0 0 22px rgba(200,155,60,0.18)}
+    .dark-box .icon{color:#C89B3C;width:18px;height:18px;flex-shrink:0}
+    .dark-box input{
+        flex:1;border:none;background:transparent;font-size:0.92rem;color:#E3E0D8;
+        font-family:inherit;outline:none;padding:0.65em 0.1em;letter-spacing:0.02em;
+    }
+    .dark-box input::placeholder{color:#6b6a64}
+    .dark-box .go{
+        background:linear-gradient(135deg,#C89B3C,#B8860B);color:#1A1206;border:none;border-radius:8px;
+        padding:0.6em 1.4em;font-size:0.78rem;font-weight:600;cursor:pointer;font-family:inherit;
+    }
+</style>
+</head>
+<body>
+
+<h1>⚜ 输入框显眼度 · 四种方案</h1>
+<p class="sub">点击输入框看聚焦效果，选择你喜欢的一种</p>
+
+<!-- 当前 -->
+<div class="demo-card">
+    <span class="tag">当前版本</span>
+    <h2>下划线式（现状）</h2>
+    <div class="underline-input">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input type="text" placeholder="探索符文之地的秘密…">
+        <span class="line"></span>
+    </div>
+    <p class="desc">只有一条淡金底线，默认状态很低调。</p>
+</div>
+
+<!-- 方案A -->
+<div class="demo-card">
+    <span class="tag">方案 A</span>
+    <h2>金色描边圆角框</h2>
+    <div class="box-input">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input type="text" placeholder="探索符文之地的秘密…">
+        <button class="go">探索</button>
+    </div>
+    <p class="desc">金色描边 + 半透明金底 + 柔和外发光，默认就很醒目。聚焦时金边变亮、发光增强。</p>
+</div>
+
+<!-- 方案B -->
+<div class="demo-card">
+    <span class="tag">方案 B</span>
+    <h2>加粗发光下划线</h2>
+    <div class="glow-underline">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input type="text" placeholder="探索符文之地的秘密…">
+        <span class="line"></span>
+    </div>
+    <p class="desc">下划线加粗成 2px 金边 + 底部金色柔光，图标提亮。聚焦时金色渐变线扫过更亮。</p>
+</div>
+
+<!-- 方案C -->
+<div class="demo-card">
+    <span class="tag">方案 C</span>
+    <h2>暗色圆角大框</h2>
+    <div class="dark-box">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input type="text" placeholder="探索符文之地的秘密…">
+        <button class="go">探索</button>
+    </div>
+    <p class="desc">深色实底圆角框 + 金色描边，右侧金色按钮。聚焦时金边变亮 + 发光，稳重大气。</p>
+</div>
+
+</body>
+</html>

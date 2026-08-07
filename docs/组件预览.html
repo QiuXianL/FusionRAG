@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FusionRAG · 组件预览</title>
+<style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+        background: #040A14; color: #E3E0D8;
+        font-family: 'Inter', 'Microsoft YaHei', sans-serif;
+        padding: 40px 20px;
+    }
+    h1 { font-size: 1.4rem; color: #C89B3C; margin-bottom: 8px; }
+    .sub { color: #8B897F; font-size: 0.85rem; margin-bottom: 30px; }
+    .demo-card {
+        background: rgba(10,16,30,0.92); border: 1px solid rgba(200,155,60,0.2);
+        border-radius: 14px; max-width: 640px; padding: 24px; margin-bottom: 30px;
+    }
+    .demo-card h2 { font-size: 0.95rem; color: #F0E6D2; margin-bottom: 16px; font-weight: 600; }
+    .demo-card h3 { font-size: 0.78rem; color: #8B897F; margin: 18px 0 10px; font-weight: 400; }
+
+    /* ═══════ Uiverse 搜索栏（金色适配）═══════ */
+    .gold-form {
+        --width-of-input: 100%;
+        --border-height: 1px;
+        --border-before-color: rgba(200,155,60,0.25);
+        --border-after-color: #C89B3C;
+        --input-hovered-color: rgba(200,155,60,0.05);
+        position: relative;
+        width: var(--width-of-input);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .gold-input {
+        color: #E3E0D8;
+        font-size: 0.95rem;
+        background-color: transparent;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 0.7em 0.3em;
+        border: none;
+        border-bottom: var(--border-height) solid var(--border-before-color);
+        font-family: inherit;
+        letter-spacing: 0.02em;
+    }
+    .gold-input::placeholder { color: #6b6a64; }
+    .gold-form:hover .gold-input { background: var(--input-hovered-color); }
+    .gold-input:focus { outline: none; }
+    .gold-input-border {
+        position: absolute;
+        background: var(--border-after-color);
+        width: 0%;
+        height: 2px;
+        bottom: 0;
+        left: 0;
+        transition: 0.35s;
+        box-shadow: 0 0 8px rgba(200,155,60,0.5);
+    }
+    .gold-input:focus ~ .gold-input-border { width: 100%; }
+
+    /* ═══════ Uiverse btn-17（黑底金边）═══════ */
+    .lol-btn,
+    .lol-btn *,
+    .lol-btn :after,
+    .lol-btn :before,
+    .lol-btn:after,
+    .lol-btn:before { border: 0 solid; box-sizing: border-box; }
+    .lol-btn {
+        -webkit-tap-highlight-color: transparent;
+        -webkit-appearance: button;
+        background-color: #000;
+        background-image: none;
+        color: #F0E6D2;
+        cursor: pointer;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.85rem;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        line-height: 1.5;
+        margin: 0;
+        padding: 0.75rem 2.4rem;
+        text-transform: uppercase;
+        border-radius: 99rem;
+        border: 2px solid #C89B3C;
+        z-index: 0;
+        position: relative;
+        overflow: hidden;
+    }
+    .lol-btn:disabled { cursor: default; opacity: 0.5; }
+    .lol-btn .text-container {
+        display: block;
+        position: relative;
+        overflow: hidden;
+        mix-blend-mode: normal;
+    }
+    .lol-btn .text {
+        display: block;
+        position: relative;
+        z-index: 2;
+    }
+    /* hover: 金色扫光掠过，文字静止不翻转 */
+    .lol-btn:after, .lol-btn:before {
+        --skew: 0.2;
+        background: linear-gradient(90deg, transparent, rgba(200,155,60,0.85), transparent);
+        content: "";
+        display: block;
+        height: 102%;
+        left: calc(-50% - 50% * var(--skew));
+        pointer-events: none;
+        position: absolute;
+        top: -104%;
+        transform: skew(calc(150deg * var(--skew))) translateY(var(--progress, 0));
+        transition: transform 0.25s ease;
+        width: 100%;
+        z-index: 1;
+    }
+    .lol-btn:after {
+        --progress: 0%;
+        left: calc(50% + 50% * var(--skew));
+        top: 102%;
+        z-index: 0;
+    }
+    .lol-btn:hover:before { --progress: 100%; }
+    .lol-btn:hover:after { --progress: -102%; }
+
+    /* 高亮变体：更亮的白色扫光 */
+    .lol-btn.solid:after, .lol-btn.solid:before {
+        background: linear-gradient(90deg, transparent, rgba(240,214,128,0.9), transparent);
+    }
+
+    .btn-row { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; margin-top: 6px; }
+    .note { font-size: 0.72rem; color: #6b6a64; margin-top: 12px; line-height: 1.6; }
+    .note b { color: #8B897F; }
+</style>
+</head>
+<body>
+
+<h1>⚜ Uiverse 组件 · 金色主题适配</h1>
+<p class="sub">搜索栏（下划线动画）+ 按钮（文字翻转 + 斜向扫光）</p>
+
+<div class="demo-card">
+    <h2>① 搜索栏（主搜索区适配）</h2>
+    <div class="gold-form">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C89B3C" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input type="text" class="gold-input" placeholder="探索符文之地的秘密…">
+        <span class="gold-input-border"></span>
+    </div>
+    <div class="note"><b>交互：</b>点击输入框 → 金色下划线从左扫到右 + 发光；hover → 淡金背景。按 Tab/点击输入框试试。</div>
+</div>
+
+<div class="demo-card">
+    <h2>② 按钮 btn-17（两种变体）</h2>
+    <h3>深蓝底 · 金色描边 · 金色扫光（主 CTA）</h3>
+    <div class="btn-row">
+        <button class="lol-btn"><span class="text-container"><span class="text">探索</span></span></button>
+        <button class="lol-btn"><span class="text-container"><span class="text">上传文档</span></span></button>
+    </div>
+    <h3>金色实底 · 白色扫光（高亮按钮）</h3>
+    <div class="btn-row">
+        <button class="lol-btn solid"><span class="text-container"><span class="text">开始检索</span></span></button>
+    </div>
+    <div class="note"><b>交互：</b>hover → 一道金色斜向扫光掠过，文字静止不翻转。两种按钮只是扫光颜色差异。</div>
+</div>
+
+</body>
+</html>
