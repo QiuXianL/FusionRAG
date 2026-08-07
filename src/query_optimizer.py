@@ -47,6 +47,7 @@ class QueryOptimizer:
                 ],
                 temperature=0.5,
                 max_tokens=200,
+                timeout=30,
                 stream=False
             )
             

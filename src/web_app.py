@@ -221,12 +221,15 @@ def api_search():
                     log_message(f"  ↳ 扩展查询: {queries[1:]}")
                     all_results = {}
                     for q in queries:
-                        res = retriever.retrieve_with_strategy(q, strategy='enhanced', top_k=top_k)
+                        # 各扩展查询先跳过重排（毫秒级），避免 4 次 × 30 对的重复重排
+                        res = retriever.retrieve_with_strategy(q, strategy='enhanced', top_k=top_k, rerank=False, return_all=True)
                         all_results[q] = res
-                    
+
                     # Fuse results
                     results = optimizer.fuse_results(all_results, original_query=query)
                     results = results[:top_k+2] # Take slightly more to allow for reranking drop-offs # Keep a few more for AI context
+                    # 融合后统一重排一次（仅约 top_k+2 对，远快于 4 次重排）
+                    results = retriever.rerank_results(query, results)
                 else:
                     results = retriever.retrieve_with_strategy(query, strategy=strategy, top_k=top_k)
             else:
@@ -299,6 +302,7 @@ def api_search():
                 - 明确对战基准（生死斗/切磋、战场环境、是否允许底牌），区分常态/爆发/底牌形态，禁止跨形态强行对比
                 - 两名角色同一套评判标准，不双标，不脑补，信息不足时标注「信息缺失」
                 - 给出多场景对局推演结论和胜负概率区间
+                4. 回答精炼，正文控制在 600 字以内，避免重复啰嗦。
 
                 请在<回答>标签内写下你的Markdown格式答案。
                 <回答>
@@ -309,6 +313,8 @@ def api_search():
                 response = client.chat.completions.create(
                     model="deepseek-chat",
                     messages=[{"role": "user", "content": prompt}],
+                    max_tokens=1500,
+                    timeout=60,
                     stream=False
                 )
                 ai_response = response.choices[0].message.content
@@ -408,11 +414,14 @@ def api_search_stream():
                             log_message(f"  ↳ 扩展查询: {queries[1:]}")
                             all_results = {}
                             for q in queries:
-                                res = retriever.retrieve_with_strategy(q, strategy='enhanced', top_k=top_k)
+                                # 各扩展查询先跳过重排（毫秒级），避免 4 次 × 30 对的重复重排
+                                res = retriever.retrieve_with_strategy(q, strategy='enhanced', top_k=top_k, rerank=False, return_all=True)
                                 all_results[q] = res
-                            
-                            results = optimizer.fuse_results(all_results)
+
+                            results = optimizer.fuse_results(all_results, original_query=query)
                             results = results[:top_k+2]
+                            # 融合后统一重排一次（仅约 top_k+2 对，远快于 4 次重排）
+                            results = retriever.rerank_results(query, results)
                         else:
                             results = retriever.retrieve_with_strategy(query, strategy=strategy, top_k=top_k)
                     else:
@@ -466,7 +475,8 @@ def api_search_stream():
                     1. 如果参考文档中没有相关信息，请说明无法从给定文档中找到答案，然后给出你认为的答案。
                     2. 请使用Markdown格式回答，包括适当的标题、列表、代码块等格式。
                     3. 回答要结构清晰，便于阅读。
-                    
+                    4. 回答精炼，正文控制在 600 字以内，避免重复啰嗦。
+
                     请在<回答>标签内写下你的Markdown格式答案。
                     <回答>
                     [在此根据文档内容用Markdown格式回答问题]
@@ -479,6 +489,8 @@ def api_search_stream():
                         response = client.chat.completions.create(
                             model="deepseek-chat",
                             messages=[{"role": "user", "content": prompt}],
+                            max_tokens=1500,
+                            timeout=30,
                             stream=True
                         )
                         
@@ -581,10 +593,13 @@ def api_chat():
                             log_message(f"  ↳ 扩展查询: {queries[1:]}")
                             all_results = {}
                             for q in queries:
-                                res = retriever.retrieve_with_strategy(q, strategy='enhanced', top_k=top_k)
+                                # 各扩展查询先跳过重排，融合后统一重排一次
+                                res = retriever.retrieve_with_strategy(q, strategy='enhanced', top_k=top_k, rerank=False, return_all=True)
                                 all_results[q] = res
                             results = optimizer.fuse_results(all_results, original_query=message)
                             results = results[:top_k + 2]
+                            # 融合后统一重排一次（仅约 top_k+2 对）
+                            results = retriever.rerank_results(message, results)
                         else:
                             results = retriever.retrieve_with_strategy(message, strategy='enhanced', top_k=top_k)
                     else:
@@ -645,7 +660,7 @@ def api_chat():
 
                 messages = [{
                     "role": "system",
-                    "content": f"你是符文之地的博学贤者，通晓英雄联盟宇宙的一切传奇。{kb_overview}请保持对话自然流畅，记住之前聊过的内容，大胆给出判断和见解。{debate_rules}{what_if_rules}"
+                    "content": f"你是符文之地的博学贤者，通晓英雄联盟宇宙的一切传奇。{kb_overview}请保持对话自然流畅，记住之前聊过的内容，大胆给出判断和见解。{debate_rules}{what_if_rules}回答精炼，正文控制在 600 字以内，避免重复啰嗦。"
                 }]
 
                 if context.strip():
@@ -668,6 +683,8 @@ def api_chat():
                     response = client.chat.completions.create(
                         model="deepseek-chat",
                         messages=messages,
+                        max_tokens=1500,
+                        timeout=30,
                         stream=True
                     )
                     for chunk in response:

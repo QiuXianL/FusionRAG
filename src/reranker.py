@@ -69,9 +69,10 @@ class Reranker:
     def _load_model(self):
         """加载交叉编码器模型"""
         # 检查是否有本地模型路径
+        # 本地模型按优先级加载：base（110M，CPU 快约5倍）优先，v2-m3 保留为回退
         local_paths = [
-            os.path.join("models", "bge-reranker-v2-m3"),
             os.path.join("models", "bge-reranker-base"),
+            os.path.join("models", "bge-reranker-v2-m3"),
             os.path.join("models", "bge-reranker-large"),
         ]
 
@@ -261,6 +262,7 @@ class Reranker:
                 messages=[{"role": "user", "content": prompt}],
                 temperature=0.0,
                 max_tokens=200,
+                timeout=30,
                 stream=False,
             )
 

@@ -57,10 +57,10 @@ class SmartRetriever:
                 except Exception as e:
                     print(f"❌ 加载数据库失败: {db_name} - {e}")
     
-    def retrieve_with_strategy(self, query: str, strategy: str = "auto", top_k: int = 3) -> List[Dict]:
+    def retrieve_with_strategy(self, query: str, strategy: str = "auto", top_k: int = 3, rerank: bool = True, return_all: bool = False) -> List[Dict]:
         """使用增强检索策略进行检索"""
         # 所有策略都使用增强检索
-        return self._enhanced_retrieval(query, top_k)
+        return self._enhanced_retrieval(query, top_k, rerank=rerank, return_all=return_all)
     
     def _choose_best_strategy(self, query: str) -> str:
         """智能选择最佳检索策略（现在只返回enhanced）"""
@@ -94,7 +94,7 @@ class SmartRetriever:
                 return source.get('name')
         return None
 
-    def _enhanced_retrieval(self, query: str, top_k: int) -> List[Dict]:
+    def _enhanced_retrieval(self, query: str, top_k: int, rerank: bool = True, return_all: bool = False) -> List[Dict]:
         """增强检索：使用加权融合策略 (Super Brain)
         最终分数 = 0.7 * 文档相似度 + 0.3 * 最大问题相似度
         """
@@ -159,8 +159,8 @@ class SmartRetriever:
         # 5. 排序并返回 Top K 候选集 (扩大范围以供重排序)
         final_results.sort(key=lambda x: x['final_score'], reverse=True)
 
-        # 获取 5倍 Top K 的候选集进行重排序（增大候选池减少遗漏）
-        candidate_k = min(len(final_results), top_k * 5)
+        # 获取候选集进行重排序（候选池折中：4倍 Top K，兼顾召回与速度）
+        candidate_k = min(len(final_results), top_k * 4)
         candidates = final_results[:candidate_k]
 
         # 格式化向量检索候选集（去重）
@@ -187,11 +187,15 @@ class SmartRetriever:
             })
 
         # 5.5. 关键词检索补充（弥补向量检索对精确名称匹配的不足）
-        keyword_candidates = self._keyword_retrieval(query, documents, top_k * 3, seen_chunks)
+        keyword_candidates = self._keyword_retrieval(query, documents, top_k * 2, seen_chunks)
         formatted_candidates.extend(keyword_candidates)
 
-        # 6. 应用重排序 (Rerank)
-        reranked_results = self.rerank_results(query, formatted_candidates)
+        # 6. 应用重排序 (Rerank) - 支持延迟重排：rerank=False 时先跳过，
+        #    由调用方对多查询 RRF 融合后的结果统一重排一次，避免 N 次重复重排
+        if rerank:
+            reranked_results = self.rerank_results(query, formatted_candidates)
+        else:
+            reranked_results = formatted_candidates
 
         # 7. 最终去重（以防重排序后仍有重复）
         seen = set()
@@ -202,7 +206,9 @@ class SmartRetriever:
                 seen.add(key)
                 final.append(r)
 
-        return final[:top_k]
+        # return_all=True（多查询融合路径）：返回完整候选集（含关键词命中的正确段落），
+        # 避免截断 top_k 时关键词候选被向量高分无关项挤出；由调用方融合后统一重排
+        return final[:top_k] if not return_all else final
 
     def _keyword_retrieval(self, query: str, documents: list, top_k: int,
                            exclude_chunks: set) -> List[Dict]:
